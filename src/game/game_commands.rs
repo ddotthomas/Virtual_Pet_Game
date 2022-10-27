@@ -121,7 +121,7 @@ fn deal_damage(damage_dealer: &mut VirtuaPet, opponent_health: &mut f32, opponen
 
 #[derive(Serialize, Deserialize)]
 struct SaveData {
-    pet_type: String,
+    pet_type: &'static str,
     name:  String,
     health: f32,
     attack: f32,
@@ -135,7 +135,7 @@ impl SaveData {
     fn create_data(players_pet: &VirtuaPet, players_xp: &PetExp) -> Self {
         match players_pet {
             VirtuaPet::Bird(stats) => SaveData {
-                pet_type: String::from("bird"),
+                pet_type: "bird",
                 name: String::from(&stats.name),
                 health: stats.health,
                 attack: stats.attack,
@@ -146,7 +146,7 @@ impl SaveData {
                 speed_xp: players_xp.speed,
             },
             VirtuaPet::Dog(stats) => SaveData {
-                pet_type: String::from("dog"),
+                pet_type: "dog",
                 name: String::from(&stats.name),
                 health: stats.health,
                 attack: stats.attack,
@@ -157,7 +157,7 @@ impl SaveData {
                 speed_xp: players_xp.speed,
             },
             VirtuaPet::Kitty(stats) => SaveData {
-                pet_type: String::from("kitty"),
+                pet_type: "kitty",
                 name: String::from(&stats.name),
                 health: stats.health,
                 attack: stats.attack,
@@ -168,7 +168,7 @@ impl SaveData {
                 speed_xp: players_xp.speed,
             },
             VirtuaPet::Snake(stats) => SaveData {
-                pet_type: String::from("snake"),
+                pet_type: "snake",
                 name: String::from(&stats.name),
                 health: stats.health,
                 attack: stats.attack,
@@ -179,7 +179,7 @@ impl SaveData {
                 speed_xp: players_xp.speed,
             },
             VirtuaPet::Toad(stats) => SaveData {
-                pet_type: String::from("toad"),
+                pet_type: "toad",
                 name: String::from(&stats.name),
                 health: stats.health,
                 attack: stats.attack,
@@ -198,7 +198,7 @@ pub fn save_game(players_pet: &VirtuaPet, players_xp: &PetExp ) {
 
     let json_save = json!(SaveData::create_data(players_pet, players_xp));
     let save_location = env::var("HOME").expect("$HOME is not set") + "/.config/virtuapetsave.json";
-    std::fs::write("virtuapetsave.json", serde_json::to_string_pretty(&json_save).unwrap()).expect("Should have write permissions");
+    std::fs::write(save_location, serde_json::to_string_pretty(&json_save).unwrap()).expect("Should have write permissions");
     println!("Saved Game");
 }
 
