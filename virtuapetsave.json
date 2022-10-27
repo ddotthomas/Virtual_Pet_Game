@@ -1,0 +1,11 @@
+{
+  "attack": 3.0,
+  "attack_xp": 0,
+  "defense": 1.0,
+  "defense_xp": 0,
+  "health": 100.0,
+  "name": "Snake",
+  "pet_type": "snake",
+  "speed": 2.0,
+  "speed_xp": 0
+}
