@@ -4,7 +4,7 @@ use super::petstuff::PetExp;
 use serde_derive::{Serialize, Deserialize};
 use serde_json::json;
 use rand::Rng;
-use std::{io, env, str::FromStr, borrow::Cow};
+use std::{io, env, str::FromStr};
 
 pub fn show_status(pet: &VirtuaPet, pet_xp: &PetExp) { //pull stats and prints them to screen
     println!("-==Pet Stats==-");
@@ -121,7 +121,7 @@ fn deal_damage(damage_dealer: &mut VirtuaPet, opponent_health: &mut f32, opponen
 
 #[derive(Serialize, Deserialize)]
 struct SaveData {
-    pet_type: &'static str,
+    pet_type: String,
     name:  String,
     health: f32,
     attack: f32,
@@ -135,7 +135,7 @@ impl SaveData {
     fn create_data(players_pet: &VirtuaPet, players_xp: &PetExp) -> Self {
         match players_pet {
             VirtuaPet::Bird(stats) => SaveData {
-                pet_type: "bird",
+                pet_type: String::from("bird"),
                 name: String::from(&stats.name),
                 health: stats.health,
                 attack: stats.attack,
@@ -146,7 +146,7 @@ impl SaveData {
                 speed_xp: players_xp.speed,
             },
             VirtuaPet::Dog(stats) => SaveData {
-                pet_type: "dog",
+                pet_type: String::from("dog"),
                 name: String::from(&stats.name),
                 health: stats.health,
                 attack: stats.attack,
@@ -157,7 +157,7 @@ impl SaveData {
                 speed_xp: players_xp.speed,
             },
             VirtuaPet::Kitty(stats) => SaveData {
-                pet_type: "kitty",
+                pet_type: String::from("kitty"),
                 name: String::from(&stats.name),
                 health: stats.health,
                 attack: stats.attack,
@@ -168,7 +168,7 @@ impl SaveData {
                 speed_xp: players_xp.speed,
             },
             VirtuaPet::Snake(stats) => SaveData {
-                pet_type: "snake",
+                pet_type: String::from("snake"),
                 name: String::from(&stats.name),
                 health: stats.health,
                 attack: stats.attack,
@@ -179,7 +179,7 @@ impl SaveData {
                 speed_xp: players_xp.speed,
             },
             VirtuaPet::Toad(stats) => SaveData {
-                pet_type: "toad",
+                pet_type: String::from("toad"),
                 name: String::from(&stats.name),
                 health: stats.health,
                 attack: stats.attack,
@@ -204,12 +204,12 @@ pub fn save_game(players_pet: &VirtuaPet, players_xp: &PetExp ) {
 
 pub fn load_save() -> (VirtuaPet, PetExp) {
     let input = env::var("HOME").expect("$HOME is not set") + "/.config/virtuapetsave.json";
-    let save_data = {
+    let save_data = { 
         let save_data_text = std::fs::read_to_string(&input).expect("test");
         serde_json::from_str::<SaveData>(&save_data_text).unwrap()
     };
 
-    let pet = match save_data.pet_type {
+    let pet = match save_data.pet_type.as_str() {
         "bird" => VirtuaPet::Bird(PetStats {
             name: save_data.name,
             health: save_data.health,
