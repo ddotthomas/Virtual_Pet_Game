@@ -145,9 +145,21 @@ pub struct PetExp {
 impl PetExp {
     pub fn gain_xp(self: &mut PetExp,stat: &str, pet: &mut VirtuaPet,xp: i32) { 
         match stat {                      // if the amount of speed experience, is more that 10 to the power of the current level of your character, add a level to that character
-            "speed" => { self.speed += xp; if self.speed > match 3i32.checked_pow(pet.return_stat("speed") as u32) { Some(num) => num, _ => 666 } { pet.level_up("speed") }  },
-            "attack" => { self.attack += xp; if self.attack > match 3i32.checked_pow(pet.return_stat("attack") as u32) { Some(num) => num, _ => 666 } { pet.level_up("attack") }},
-            "defense" => { self.defense += xp; if self.defense > match 3i32.checked_pow(pet.return_stat("defense") as u32) { Some(num) => num, _ => 666 } { pet.level_up("defense") }},
+            "speed" => { self.speed += xp; 
+                while self.speed > match 3i32.checked_pow(pet.return_stat("speed") as u32) { Some(num) => num, _ => 666 } { 
+                    pet.level_up("speed") 
+                }  
+            },
+            "attack" => { self.attack += xp;
+                while self.attack > match 3i32.checked_pow(pet.return_stat("attack") as u32) { Some(num) => num, _ => 666 } { 
+                    pet.level_up("attack") 
+                }
+            },
+            "defense" => { self.defense += xp; 
+                while self.defense > match 3i32.checked_pow(pet.return_stat("defense") as u32) { Some(num) => num, _ => 666 } { 
+                    pet.level_up("defense") 
+                }
+            },
             &_ => {},
         }
 

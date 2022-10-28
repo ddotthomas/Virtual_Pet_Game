@@ -40,7 +40,6 @@ pub fn start_test_fight(pet: &mut VirtuaPet, pet_xp: &mut PetExp) {  //create a 
 fn start_fight(fighter1: &mut VirtuaPet, fighter2: &mut VirtuaPet, player_xp: &mut PetExp) {  //fighting system, should be able to take any two virtual pets and battle them against each other
     let mut health1 = fighter1.return_stat("health"); //create health buffers for fight
     let mut health2 = fighter2.return_stat("health");
-    let mut input = String::new();
     'fight: loop { //start fight, checking after each 'turn' if other player ran out of hp
         deal_damage(fighter1, &mut health2, fighter2, player_xp); //the turns are based on the order the pets are passed to the function, fighter1 then 2
         if health2 < 0. { 
@@ -69,7 +68,7 @@ fn start_fight(fighter1: &mut VirtuaPet, fighter2: &mut VirtuaPet, player_xp: &m
             println!("{} has {} health left.", fighter1.return_name(), health1);
         }
         println!("Commands: >[F] Fight >[R] Run");  //let the player make decisions between turns, later option to use items or other things
-        input = String::new();
+        let mut input = String::new();
         io::stdin().read_line(&mut input).expect("failed to read input");
         let i = match char::from_str(&input[..1]) {
             Ok(c) => c,
@@ -80,7 +79,6 @@ fn start_fight(fighter1: &mut VirtuaPet, fighter2: &mut VirtuaPet, player_xp: &m
             'r' => { break 'fight; },
             _ => {},
         }
-
     }
 }
 
@@ -121,7 +119,7 @@ fn deal_damage(damage_dealer: &mut VirtuaPet, opponent_health: &mut f32, opponen
 
 #[derive(Serialize, Deserialize)]
 struct SaveData {
-    pet_type: String,
+    pet_type: String, //All the string types have to be String in order to move their values from one scope to another
     name:  String,
     health: f32,
     attack: f32,
@@ -131,6 +129,7 @@ struct SaveData {
     defense_xp: i32,
     speed_xp: i32,
 }
+
 impl SaveData {
     fn create_data(players_pet: &VirtuaPet, players_xp: &PetExp) -> Self {
         match players_pet {
@@ -192,23 +191,20 @@ impl SaveData {
         } 
     }
 }
-pub fn save_game(players_pet: &VirtuaPet, players_xp: &PetExp ) {
-    
-                
 
+pub fn save_game(players_pet: &VirtuaPet, players_xp: &PetExp ) {
     let json_save = json!(SaveData::create_data(players_pet, players_xp));
     let save_location = env::var("HOME").expect("$HOME is not set") + "/.config/virtuapetsave.json";
     std::fs::write(save_location, serde_json::to_string_pretty(&json_save).unwrap()).expect("Should have write permissions");
     println!("Saved Game");
 }
 
-pub fn load_save() -> (VirtuaPet, PetExp) {
+pub fn load_save() -> (VirtuaPet, PetExp) {  //This function grabs the data from the save file and returns it as the game data types
     let input = env::var("HOME").expect("$HOME is not set") + "/.config/virtuapetsave.json";
     let save_data = { 
         let save_data_text = std::fs::read_to_string(&input).expect("test");
         serde_json::from_str::<SaveData>(&save_data_text).unwrap()
     };
-
     let pet = match save_data.pet_type.as_str() {
         "bird" => VirtuaPet::Bird(PetStats {
             name: save_data.name,
@@ -264,14 +260,11 @@ pub fn load_save() -> (VirtuaPet, PetExp) {
             is_players: true,
             }
         ),
-    };
-    
+    };  
     let xp = PetExp {
         attack: save_data.attack_xp,
         defense: save_data.defense_xp,
         speed: save_data.speed_xp,
     };
-
     (pet, xp)
-
 }
